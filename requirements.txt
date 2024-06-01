@@ -1,3 +1,6 @@
 streamlit
 google-generativeai
 PyMuPDF
+google-generativeai
+py-youtube
+youtube-tool

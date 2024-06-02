@@ -81,8 +81,8 @@ st.title('PDF to QuizMaker')
 def main():
     # Create a form for PDF upload
     with st.form(key='pdf_form'):
-        pdf_file = st.file_uploader("Upload PDF", type=['pdf'])
-        gemini_api_key = st.text_input("Gemini API Key")
+        pdf_file = st.file_uploader("**Upload PDF**", type=['pdf'])
+        gemini_api_key = st.text_input('**Gemini API Key** (Get the api key from [Google AiStudio](https://aistudio.google.com/app/apikey) )', placeholder='Paste genaiAPI here')
         submit_button = st.form_submit_button(label='Submit')
 
     # Handle form submission

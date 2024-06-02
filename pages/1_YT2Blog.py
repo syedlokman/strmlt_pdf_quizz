@@ -1,14 +1,22 @@
 import streamlit as st
 import subprocess
 import google.generativeai as genai
-import json
-import base64
-import pathlib
-import pprint
-import requests
-import mimetypes
 import re
 import pandas as pd
+
+
+def extract_video_id(url):
+    # Define the regex pattern for YouTube video IDs
+    pattern = re.compile(r'(?:https?://)?(?:www\.)?(?:m\.)?(?:youtube\.com/watch\?v=|youtu\.be/)([\w-]{11})')
+    
+    # Search for the pattern in the URL
+    match = pattern.search(url)
+    
+    # If a match is found, return the video ID, otherwise return None
+    if match:
+        return match.group(1)
+    else:
+        return None
 
 def getSubtitle(url, language='English'):
     if language == "English":
@@ -48,16 +56,15 @@ st.sidebar.title("Video Processing Form")
 # Create a form
 with st.sidebar.form(key='video_form'):
     # Streamlit app code
-    genaiAPI = st.text_input('genaiAPI', placeholder='Paste genaiAPI here')
-    language = st.selectbox("Video Language:", ("English", "Bangla", "Hindi", "Other"), placeholder="Language")
-    postType = st.selectbox("postType?", ("NoOutline", "WithOutline", "TipsNTricks", "Code"), placeholder="postType")
-    outline = st.text_area('outline', placeholder='outline')
-    model_name = st.text_input('gemini model:', "gemini-1.5-pro-latest")
-    url = st.text_input('Video URL', placeholder='Paste the URL here')
+    genaiAPI = st.text_input('**genaiAPI** (Get the api key from [Google AiStudio](https://aistudio.google.com/app/apikey) )', placeholder='Paste genaiAPI here')
+    language = st.selectbox("**Video Language:**", ("English", "Bangla", "Hindi", "Other"), placeholder="Language")
+    postType = st.selectbox("**postType?**", ("NoOutline", "WithOutline", "TipsNTricks", "Code"), placeholder="postType")
+    outline = st.text_area('**outline**', placeholder='outline')
+    model_name = st.selectbox('**gemini model:**', ("gemini-1.5-flash-latest", "gemini-1.5-pro-latest"), placeholder="gemini model")
+    url = st.text_input('**Video URL**', placeholder='Paste the URL here')
 
     # Submit button
     submit_button = st.form_submit_button(label='Submit')
-
 
 # Handle form submission
 with st.sidebar:
@@ -76,16 +83,18 @@ with st.sidebar:
     # Use regular expression to remove timestamps
     outline_cleaned = re.sub(r"\d+:\d+ - ", "", outline)
     print(outline_cleaned)
-    video = getSubtitle(url, language)
+
+    videoURL = f"https://www.youtube.com/watch?v={extract_video_id(url)}"
+    video = getSubtitle(videoURL, language)
     st.sidebar.write("WordCount: ", video['wordcount'])
 
     st.write("Processing the form data...")
     st.write(f"genaiAPI: {genaiAPI}")
     st.write(f"Language: {language}")
     st.write(f"postType: {postType}")
-    st.write(f"Outline: {outline_cleaned}")
+    # st.write(f"Outline: {outline_cleaned}")
     st.write(f"Model Name: {model_name}")
-    st.write(f"Video URL: {url}")
+    st.write(f"Video URL: {videoURL}")
 
     lecture = video['subtitle']
 
@@ -104,8 +113,8 @@ with st.sidebar:
         msg = f"""make a blog with multisections out of this in English:```
         {lecture} ``` """
 
-    expander = st.expander("User Prompt")
-    expander.write(msg)
+    # expander = st.expander("User Prompt")
+    # expander.write(msg)
 
 
 
@@ -133,7 +142,11 @@ model = genai.GenerativeModel(
     safety_settings=safety_settings)
 
 
+
 convo = model.start_chat(history=[])
-convo.send_message(msg)
+
+with st.spinner('Please Wait. It`s Cooking...'):
+    convo.send_message(msg)
 response = convo.last
+st.balloons()
 response.text

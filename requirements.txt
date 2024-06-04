@@ -5,7 +5,7 @@ google-generativeai
 py-youtube
 youtube-tool
 pytube
-opencv-python
+opencv-python-headless
 fpdf
 moviepy
 streamlit-ext

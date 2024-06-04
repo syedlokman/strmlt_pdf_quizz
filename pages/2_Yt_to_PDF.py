@@ -1,28 +1,49 @@
 import streamlit as st
 import cv2
-import numpy as np
 from pytube import YouTube
-from fpdf import FPDF
-import tempfile
 import os
 from moviepy.editor import VideoFileClip, vfx
 from img2pdf import convert
 
+def convert_to_1fps_video(video_path):
+    cap = cv2.VideoCapture(video_path)
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    video_1fps_filename = f'1fps_{os.path.basename(video_path)}'
+
+    if not os.path.exists(video_1fps_filename):
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Use MPEG-4 Part 2 codec
+        out = cv2.VideoWriter(video_1fps_filename, fourcc, 1, (width, height))
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        progress_bar = st.progress(0, text="Converting video to 1 FPS...")
+
+        frame_counter = 0
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            if frame_counter % fps == 0:
+                out.write(frame)
+
+            frame_counter += 1
+            progress_bar.progress(frame_counter / total_frames)
+
+        cap.release()
+        out.release()
+        progress_bar.empty()
+        st.success("Video converted to 1 FPS successfully")
+
+    return video_1fps_filename
 
 # Step 1: Download a YouTube video from the given link
 def download_video(url):
-    
     yt = YouTube(url)
     video_filename = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().default_filename
 
     if not os.path.exists(video_filename):
-        st.progress(0, text="Downloading video...")
         video = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
-        video_length = video.filesize
-        progress_bar = st.progress(0)
-        def on_progress(stream, chunk, bytes_remaining):
-            progress_value = (video_length - bytes_remaining) / video_length
-            progress_bar.progress(progress_value)
         video.download(output_path='.', filename=video_filename, max_retries=10)
     return video_filename
 
@@ -37,37 +58,36 @@ def compress_video_to_2x(input_path):
         video_2x = video.fx(vfx.speedx, 10)
         # Save the sped-up video
         video_2x.write_videofile(output)
-
     return output
 
 
-def convert_to_1fps_video(video_path):
-    cap = cv2.VideoCapture(video_path)
-    fps = int(cap.get(cv2.CAP_PROP_FPS))
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+# def convert_to_1fps_video(video_path):
+#     cap = cv2.VideoCapture(video_path)
+#     fps = int(cap.get(cv2.CAP_PROP_FPS))
+#     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+#     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-    video_1fps_filename = f'1fps_{os.path.basename(video_path)}'
+#     video_1fps_filename = f'1fps_{os.path.basename(video_path)}'
 
-    if not os.path.exists(video_1fps_filename):
-        out = cv2.VideoWriter(video_1fps_filename, cv2.VideoWriter_fourcc(*'mp4v'), 1, (width, height))
+#     if not os.path.exists(video_1fps_filename):
+#         out = cv2.VideoWriter(video_1fps_filename, cv2.VideoWriter_fourcc(*'mp4v'), 1, (width, height))
 
-        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        progress_bar = st.progress(0, text="Converting video to 1 FPS...")
-        for i in range(total_frames):
-            ret, frame = cap.read()
-            if not ret:
-                break
-            if i % fps == 0:
-                out.write(frame)
-            progress_bar.progress(i / total_frames)
+#         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+#         progress_bar = st.progress(0, text="Converting video to 1 FPS...")
+#         for i in range(total_frames):
+#             ret, frame = cap.read()
+#             if not ret:
+#                 break
+#             if i % fps == 0:
+#                 out.write(frame)
+#             progress_bar.progress(i / total_frames)
 
-        # st.success("Video converted to 1 FPS successfully")
-        cap.release()
-        out.release()
-        return video_1fps_filename
+#         # st.success("Video converted to 1 FPS successfully")
+#         cap.release()
+#         out.release()
+#         return video_1fps_filename
 
-    return video_1fps_filename
+#     return video_1fps_filename
 
 
 @st.cache_data
@@ -209,7 +229,6 @@ def app():
                 mime="application/pdf"
             )
 
-            
 
 if __name__ == "__main__":
     app()

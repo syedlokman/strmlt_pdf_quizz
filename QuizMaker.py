@@ -69,7 +69,7 @@ safety_settings = [
 ]
 
 model = genai.GenerativeModel(
-  model_name="gemini-1.5-pro",
+  model_name="gemini-1.5-pro-latest",
   safety_settings=safety_settings,
   generation_config=generation_config,
 )
@@ -112,8 +112,7 @@ def main():
               ]
             )
 
-            extractiveSummary = chat_session.send_message("""
-            You are a great educator. make a list of key concept and then create a detailed extractive summarization of those concepts from the given image as if you are learning it in details 
+            extractiveSummary = chat_session.send_message(""" You can read images and understand them to make a list of key concept and then create a detailed extractive summarization of those concepts from the given image as if you are learning it in details 
             """)
 
             # Update progress bar and text

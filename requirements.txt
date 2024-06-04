@@ -1,12 +1,12 @@
 streamlit
+
 google-generativeai
 PyMuPDF
+
 google-generativeai
-py-youtube
 youtube-tool
+
 pytube
 opencv-python-headless
-fpdf
 moviepy
-streamlit-ext
 img2pdf

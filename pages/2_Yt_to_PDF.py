@@ -218,14 +218,14 @@ def app():
             st.download_button(
                 label="Download Output Video",
                 data=files['video'],
-                file_name="output_video.mp4",
+                file_name=output_path,
                 mime="video/mp4"
             )
             
             st.download_button(
                 label="Download PDF",
                 data=files['pdf'],
-                file_name="document.pdf",
+                file_name=pdf_path,
                 mime="application/pdf"
             )
 

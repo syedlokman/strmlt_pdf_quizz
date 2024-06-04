@@ -1,0 +1,25 @@
+Metadata-Version: 2.1
+Name: youtube-tool
+Version: 1.0.11
+Summary: Extract information from youtube video's
+Home-page: https://github.com/nlitsme/youtube_tool/
+Author: Willem Hengeveld
+Author-email: itsme@xs4all.nl
+License: MIT
+Keywords: youtube commandline
+Platform: UNKNOWN
+Classifier: Environment :: Console
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Utilities
+Requires-Python: >=3.8
+
+
+Commandline tool which can extract comments, subtitles or livechat
+content from a youtube video. It can also list all video's
+in a playlist, or from a search result.
+
+

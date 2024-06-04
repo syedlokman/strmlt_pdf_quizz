@@ -4,3 +4,9 @@ PyMuPDF
 google-generativeai
 py-youtube
 youtube-tool
+pytube
+opencv-python
+fpdf
+moviepy
+streamlit-ext
+img2pdf

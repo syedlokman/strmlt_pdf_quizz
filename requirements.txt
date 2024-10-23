@@ -6,7 +6,7 @@ PyMuPDF
 google-generativeai
 youtube-tool
 
-pytube
+pytubefix
 opencv-python-headless
 moviepy
 img2pdf

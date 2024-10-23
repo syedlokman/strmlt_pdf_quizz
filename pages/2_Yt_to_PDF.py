@@ -1,9 +1,13 @@
 import streamlit as st
 import cv2
-from pytube import YouTube
+# from pytube import YouTube
 import os
 from moviepy.editor import VideoFileClip, vfx
 from img2pdf import convert
+from urllib.error import HTTPError
+import time
+from pytubefix import YouTube
+from pytubefix.cli import on_progress
 
 def convert_to_1fps_video(video_path):
     cap = cv2.VideoCapture(video_path)
@@ -40,13 +44,19 @@ def convert_to_1fps_video(video_path):
 # Step 1: Download a YouTube video from the given link
 def download_video(url):
     yt = YouTube(url)
-    video_filename = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().default_filename
+    video = yt.streams.filter(file_extension='mp4').order_by('resolution').desc().first()
+    video.default_filename
+    videopah = video.download()
 
-    if not os.path.exists(video_filename):
-        video = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
-        video.download(output_path='.', filename=video_filename, max_retries=10)
-    return video_filename
 
+    # yt = YouTube(url)
+    # video_filename = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().default_filename
+
+    # if not os.path.exists(video_filename):
+    #     video = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
+    #     video.download(output_path='.', filename=video_filename, max_retries=10)
+    
+    return videopah #video_filename
 
 def compress_video_to_2x(input_path):
     output = f'compressed_{input_path}'
